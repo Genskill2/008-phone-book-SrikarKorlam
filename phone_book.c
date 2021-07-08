@@ -52,7 +52,8 @@ int main(int argc, char *argv[]) {
     char *phone = argv[3];
     add(name, phone);
     exit(0);
-  } else if (strcmp(argv[1], "list") == 0) {  /* Handle list */
+  } 
+  else if (strcmp(argv[1], "list") == 0) {  /* Handle list */
     if (argc != 2) {
       print_usage("Improper arguments for list", argv[0]);
       exit(1);
@@ -61,8 +62,9 @@ int main(int argc, char *argv[]) {
     list(fp);
     fclose(fp);
     exit(0);
-  } else if (strcmp(argv[1], "search") == 0) {  /* Handle search */
-   /* printf("NOT IMPLEMENTED!\n"); TBD  */
+  } 
+  else if (strcmp(argv[1], "search") == 0) {  /* Handle search */
+    // printf("NOT IMPLEMENTED!\n"); /* TBD  */
     if(argc!=3){
       print_usage("Improper arguments for delete", argv[0]);
       exit(1);
@@ -76,7 +78,8 @@ int main(int argc, char *argv[]) {
     }
     fclose(fp);
     exit(0);
-  } else if (strcmp(argv[1], "delete") == 0) {  /* Handle delete */
+  } 
+  else if (strcmp(argv[1], "delete") == 0) {  /* Handle delete */
     if (argc != 3) {
       print_usage("Improper arguments for delete", argv[0]);
       exit(1);
@@ -90,7 +93,8 @@ int main(int argc, char *argv[]) {
     }
     fclose(fp);
     exit(0);
-  } else {
+  } 
+  else {
     print_usage("Invalid command", argv[0]);
     exit(1);
   }
@@ -104,8 +108,9 @@ FILE *open_db_file() {
   }
   return fp;
 }
-
+  
 void free_entries(entry *p) {
+  /* TBD */
   entry *temp=p;
   entry *tmp_nxt;
   while(temp!=NULL){
@@ -113,10 +118,8 @@ void free_entries(entry *p) {
     free(temp);
     temp=tmp_nxt;
   }
-  
-  /* TBD */
- // printf("Memory is not being freed. This needs to be fixed!\n");  
-  
+  return;
+  //printf("Memory is not being freed. This needs to be fixed!\n");  
 }
 
 void print_usage(char *message, char *progname) {
@@ -133,8 +136,7 @@ void print_usage(char *message, char *progname) {
   printf("    Deletes the entry for the name in the database.\n    Prints 'no match' if there's no such name.\n");
 }
 
-entry *
-create_entry_node(char *name, char *phone) {
+entry *create_entry_node(char *name, char *phone) {
   entry *ret;
   ret = malloc(sizeof(entry));
   strcpy(ret->name, name);
@@ -194,6 +196,20 @@ void add(char *name, char *phone) {
   fclose(fp);
 }
 
+void list(FILE *db_file) {
+  entry *p = load_entries(db_file);
+  entry *base = p;
+  int count=0;
+  while (p!=NULL) {
+    count++;
+    printf("%-20s : %10s\n", p->name, p->phone);
+    p=p->next;
+  }
+  /* TBD print total count */
+  printf("Total entries :  %d\n",count);
+  free_entries(base);
+}
+
 int search(FILE *db_f,char *name){
   entry *p=load_entries(db_f);
   entry *base=p;
@@ -210,27 +226,15 @@ int search(FILE *db_f,char *name){
   return 0;
 }
 
-void list(FILE *db_file) {
-  entry *p = load_entries(db_file);
-  entry *base = p;
-  while (p!=NULL) {
-    printf("%-20s : %10s\n", p->name, p->phone);
-    p=p->next;
-  }
-  /* TBD print total count */
-  free_entries(base);
-}
-
-
 int delete(FILE *db_file, char *name) {
   entry *p = load_entries(db_file);
   entry *base = p;
   entry *prev = NULL;
   entry *del = NULL ; /* Node to be deleted */
   int deleted = 0;
+  int count=0;
   while (p!=NULL) {
     if (strcmp(p->name, name) == 0) {
-    
       /* Matching node found. Delete it from the linked list.
          Deletion from a linked list like this
    
@@ -258,8 +262,7 @@ int delete(FILE *db_file, char *name) {
     }
     prev=p;
     p=p->next;
-      
-   }
+  }
   write_all_entries(base);
   free_entries(base);
   return deleted;
