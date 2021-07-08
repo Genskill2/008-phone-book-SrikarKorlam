@@ -62,23 +62,8 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     exit(0);
   } else if (strcmp(argv[1], "search") == 0) {  /* Handle search */
-    if(argc != 3)
-        {
-            print_usage("Improper arguments for search",argv[0]);
-            exit(1);
-        }
-
-        FILE *fp = open_db_file();
-        char *name = argv[2];
-        if(search(fp, name) == 0) 
-        {
-            printf("no match\n");
-            fclose(fp);
-            exit(1);
-        }
-        fclose(fp);
-        exit(0);
-   } else if (strcmp(argv[1], "delete") == 0) {  /* Handle delete */
+    printf("NOT IMPLEMENTED!\n"); /* TBD  */
+  } else if (strcmp(argv[1], "delete") == 0) {  /* Handle delete */
     if (argc != 3) {
       print_usage("Improper arguments for delete", argv[0]);
       exit(1);
@@ -108,14 +93,13 @@ FILE *open_db_file() {
 }
 
 void free_entries(entry *p) {
-  entry *tmp = NULL;
-
-    while(p != NULL)
-    {
-        tmp = p;
-        p = p->next;
-        free(tmp);
-    }
+  entry *tmp=NULL; 
+  
+  while(p != NULL){
+    tmp=p;
+    p=p->next;
+    free(tmp);
+  }
 }
 
 void print_usage(char *message, char *progname) {
@@ -193,27 +177,6 @@ void add(char *name, char *phone) {
   fclose(fp);
 }
 
-int search(FILE *db_file, char *name)
-{
-    entry *p = load_entries(db_file);
-    entry *base = p;
-    int search = 0;
-
-    while(p!=NULL) 
-    {
-        if(strcmp(p->name, name) == 0) 
-        {
-            printf("%s\n",p->phone);
-            search = 1;
-        }
-        
-        p = p->next;
-    }
-
-    free_entries(base);
-    return search;
-}
-
 void list(FILE *db_file) {
   entry *p = load_entries(db_file);
   entry *base = p;
@@ -224,7 +187,7 @@ void list(FILE *db_file) {
     count++;
   }
   /* TBD print total count */
-  printf("Total entries: %d\n",count);
+  printf("Total entries = %d",count);
   free_entries(base);
 }
 
@@ -237,6 +200,22 @@ int delete(FILE *db_file, char *name) {
   int deleted = 0;
   while (p!=NULL) {
     if (strcmp(p->name, name) == 0) {
+       if(p==base){
+        base=p->next;
+        del=p;
+        free(del);
+        deleted=1;
+        break;
+       }else{
+        del=p;
+        prev->next=p->next;
+        free(del);
+        deleted = 1;
+        break;
+       }
+    }
+    prev=p;
+    p=p->next;
       /* Matching node found. Delete it from the linked list.
          Deletion from a linked list like this
    
@@ -249,28 +228,26 @@ int delete(FILE *db_file, char *name) {
       */
 
       /* TBD */
-       if(p == base)
-            {
-                base = p->next;
-                del = p;
-                free(del);
-                deleted = 1;
-                break;
-            }
-            else
-            {
-                del = p; 
-                prev->next = p->next;
-                free(del);
-                deleted = 1;
-                break;
-            }
-        }
-        
-        prev = p;
-        p = p->next;
-    }
+      
+    
+  }
   write_all_entries(base);
   free_entries(base);
   return deleted;
+}
+
+int search(FILE *db_file,char *name){
+entry *p=load_entries(db_file);
+entry *base=p;
+int search=0;
+
+ while(p!=NULL){
+  if(strcmp(p->name,name)==0){
+   printf("%s",p->phone);
+   search=1;
+  }
+ p=p->next;
+ }
+free_entries(base);
+return search;
 }
