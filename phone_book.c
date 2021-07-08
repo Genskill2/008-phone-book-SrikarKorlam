@@ -21,17 +21,17 @@ int delete(FILE *, char *);
 /* Utility functions  */
 FILE * open_db_file(); /* Opens the database file. Prints error and
                           quits if it's not available */
-void print_usage(char , char *);  / Prints usage */
-entry load_entries(FILE *);         / Load all entries from the
+void print_usage(char *, char *);  /* Prints usage */
+entry *load_entries(FILE *);         /* Load all entries from the
                                       database file. Returns pointer
                                       to first entry */
-entry create_entry_node(char *, char *);  / Create a new entry
+entry *create_entry_node(char *, char *);  /* Create a new entry
                                               node. Has to be freed by
                                               user. */
-void free_entries(entry ); / TBD Given the first node of a linked list
+void free_entries(entry *); /* TBD Given the first node of a linked list
                                of entries, will free all the nodes */ 
 
-void write_all_entries(entry ); / Given the first node of a linked
+void write_all_entries(entry *); /* Given the first node of a linked
                                     list of entries, will delete the
                                     database file on the disk and save
                                     the given entries into the file */
@@ -165,7 +165,7 @@ entry *load_entries(FILE *fp) {
     [^,\n] Square brackets are used to indicate a set of allowed
            characters [abc] means only a, b, or c. With the ^, it's
            used to specify a set of disallowed characters. So [^abc]
-           means any character except a, b, or c. [^,] means any
+           means any character *except* a, b, or c. [^,] means any
            character except a , [^,\n] means any character except a
            comma(,) or a newline(\n).
 
@@ -209,7 +209,7 @@ void list(FILE *db_file) {
     p=p->next;
   }
   /* TBD print total count */
-  printf("Total entries :  %d\n",count);
+  printf("Total entries : %d\n",count);
   free_entries(base);
 }
 
@@ -233,7 +233,7 @@ int delete(FILE *db_file, char *name) {
   entry *p = load_entries(db_file);
   entry *base = p;
   entry *prev = NULL;
-  entry del = NULL ; / Node to be deleted */
+  entry *del = NULL ; /* Node to be deleted */
   int deleted = 0;
   int count=0;
   while (p!=NULL) {
